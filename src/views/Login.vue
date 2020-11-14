@@ -62,8 +62,8 @@ export default {
     return {
       params: {
         // cid,
-        phone: "",
-        password: "",
+        phone: "17688987652",
+        password: "123456",
       },
       rules: {
         phone: [{ validator: checkPhone, trigger: "blur" }],
@@ -74,13 +74,11 @@ export default {
   methods: {
     submitForm() {
       this.$refs.login.validate(async valid => {
-				console.log(valid)
         if (valid) {
 					let {code, data, msg } = await login(this.params)
 					if (code === 200) {
 						this.$message.success('登录成功')
 						let { token, menus, name, userId } = data
-						console.log(token, menus, name, userId)
 						localStorage.setItem('token', token)
 						localStorage.setItem('menus', menus)
 						localStorage.setItem('name', name)

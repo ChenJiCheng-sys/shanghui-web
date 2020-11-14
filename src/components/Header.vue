@@ -1,19 +1,27 @@
 <template>
   <div class="header">
-    <i :class="[icon]"></i>
+    <i @click="changCollapse" :class="[$store.state.isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold']"></i>
     <div>
       <span>您好~管理员</span>
-      <span class="logout">退出登录</span>
+      <span class="logout" @click="logout">退出登录</span>
     </div>
   </div>
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+import { logout } from '@/request/login.js'
 export default {
-  data() {
-    return {
-      icon: 'el-icon-s-fold'
-		}
+  methods: {
+    ...mapMutations({ changCollapse: 'changCollapse' }),
+    async logout () {
+      let res = await logout()
+        localStorage.clear()
+        sessionStorage.clear()
+        this.$store.commit('clearTags')
+        this.$message.success('退出成功')
+        this.$router.replace('/login')
+    }
   }
 }
 </script>

@@ -1,11 +1,20 @@
 <template>
   <div class="home">
     <Left />
-    <div style="flex: 1;">
+    <div
+      :style="`position: absolute; top: 0; right: 0; bottom: 0; left: ${
+        $store.state.isCollapse ? '64px' : '256px'
+      }; transition: all 300ms ease-in-out; overflow: hidden;`"
+    >
       <MyHeader />
-      <Tag />
+      <Tag v-if="$route.path !== '/'" />
+
       <div class="home_contetn">
-        <router-view />
+        <transition name="move" mode="out-in">
+          <keep-alive>
+            <router-view />
+          </keep-alive>
+        </transition>
       </div>
     </div>
   </div>
@@ -21,20 +30,20 @@ export default {
     MyHeader,
     Left,
     HomeIndex,
-    Tag
-  }
+    Tag,
+  },
 };
 </script>
 
 <style lang='less'>
-  .home {
-    display: flex;
-    .home_contetn {
-      width: 100%;
-      height: ~'calc(100vh - 94px)';
-      padding: 20px;
-      box-sizing: border-box;
-      background-color: #f0f2f5;
-    }
+.home {
+  background-color: #f0f2f5;
+  .home_contetn {
+    width: auto;
+    height: 100%;
+    height: ~"calc(100vh - 94px)";
+    padding: 16px;
+    box-sizing: border-box;
   }
+}
 </style>

@@ -1,20 +1,26 @@
 import axios from 'axios'
-import { Message } from 'element-ui'
+import { Message, Loading  } from 'element-ui'
 const baseURL = 'http://192.168.8.147:9000'
+
 
 const instance = axios.create({
   baseURL,
-  timeout: 1500
+  timeout: 10000
 })
-
+let loadingInstance
 instance.interceptors.request.use(config => {
+  const token = localStorage.getItem('token')
+  token && (config.headers['token'] = token)
+  loadingInstance = Loading.service()
   return config
-}, err => Promise.reject(err))
+}, err => Message.error('请求错误'))
 
 instance.interceptors.response.use(res => {
+  loadingInstance.close()
   return res.data
 }, err => {
-  Message.error('网络超时')
+  loadingInstance.close()
+  Message.error('网络错误')
 })
 
 export default instance

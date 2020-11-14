@@ -4,11 +4,11 @@
       <li
         class="tags-li"
         v-for="(item, index) in $store.state.tags"
-        :class="{ active: isActive(item.path) }"
+        :class="{ active: isActive(item.index) }"
         :key="index"
       >
-        <router-link :to="item.path" class="tags-li-title">
-          {{ item.name }}
+        <router-link :to="item.index" class="tags-li-title">
+          {{ item.title }}
         </router-link>
         <span class="tags-li-icon" @click="close(index)"
           ><i class="el-icon-close"></i
@@ -32,9 +32,6 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 export default {
-  data() {
-    return {};
-  },
   methods: {
     isActive(path) {
       return path === this.$route.fullPath;
@@ -54,10 +51,11 @@ export default {
       return this.$store.state.tags > 0;
     },
   },
-  created() {
-    console.log(this.$store.state.tags);
-    console.log(mapState({ tags: (state) => state.tags }));
-  },
+  mounted () {
+    window.onbeforeunload = function () {
+      sessionStorage.setItem('tags', JSON.stringify(this.$store.state.tags))
+    }.bind(this)
+  }
 };
 </script>
 
@@ -67,6 +65,7 @@ export default {
   height: 30px;
   overflow: hidden;
   background: #fff;
+	margin-top: 10px;
   padding-right: 120px;
   box-shadow: 0 5px 10px #ddd;
 }

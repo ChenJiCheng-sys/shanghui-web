@@ -4,21 +4,21 @@
       background-color="#001529"
       text-color="#ccc"
       active-text-color="#fff"
-      class="sidebar-el-menu left"
+      class="el-menu-vertical-demo left"
       unique-opened
       router
-      @open="handleOpen"
-      @close="handleClose"
-      :collapse="isCollapse"
+      @select="selectMenu"
+      :collapse="$store.state.isCollapse"
     >
-      <div v-if="!isCollapse" class="left_header">
+      <div v-if="!$store.state.isCollapse" class="left_header">
         <div>商会后台管理系统</div>
       </div>
-        <el-submenu v-for="item in menus" :index="item.index"  :key="item.index">
+      <template v-for="item in menus">
+        <el-submenu v-if="item.subs" :index="item.index" :key="item.index">
 
           <template slot="title">
               <i :class="item.icon"></i>
-              <span slot="title">{{ item.title }}</span>
+              <span slot="title">{{item.title}}</span>
           </template>
 
           <template v-for="itemOne in item.subs">
@@ -32,20 +32,24 @@
               <el-menu-item :key="itemOne.index" :index="itemOne.index">{{itemOne.title}}</el-menu-item>
             </template>
           </template>
-
         </el-submenu>
+        <el-menu-item v-else :key="item.index" :index="item.index">
+          <i :class="item.icon"></i>
+          <span slot="title">{{item.title}}</span>
+        </el-menu-item>
+      </template>
     </el-menu>
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
   data() {
     return {
-      isCollapse: false,
       menus: [
         {
           icon: "el-icon-s-home",
-          index: "/home",
+          index: "/",
           title: "首页",
         },
         {
@@ -118,12 +122,24 @@ export default {
     }
   },
   methods: {
-    handleOpen () {},
-    handleClose () {}
+    selectMenu (index, indexPath) {
+      if (index === '/') return
+      if (this.$store.state.tags.some(v => v.index === index)) return
+      let list = this.menus
+      let temp
+      for (let i = 0; i <= indexPath.length - 1; i++) {
+        temp = list.find(v => indexPath[i] === v.index)
+        if (temp.subs && temp.subs.length > 0) {
+          list = temp.subs
+        }
+      }
+      this.addItem(temp)
+    },
+    ...mapMutations({addItem: 'addItem'})
   },
   computed: {
     onRoutes() {
-      return this.$route.path.replace('/', '');
+      return this.$route.path
     }
   }
 };
@@ -132,6 +148,11 @@ export default {
 <style lang="less">
 .left {
   height: 100vh;
+  overflow: auto;
+  -ms-overflow-style: none; /* IE 10+ */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome Safari */
+  }
   .left_header {
     width: 256px;
     height: 64px;
@@ -148,5 +169,8 @@ export default {
       background-color: #7f7f7f;
     }
   }
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 256px;
 }
 </style>
